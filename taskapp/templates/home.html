@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task App</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,90,100..900;1,90,100..900&family=Roboto+Mono:ital,wght@1,300&family=Rubik:ital,wght@0,300..900;1,300..900&family=Schibsted+Grotesk:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="top">
+        <nav class="nav_bar">
+            <div class="title">
+                <h1>{{ current_user.username }}</h1>
+                <a style="text-decoration: none;" href="{{url_for('index')}}" class="welcome-text">TaskApp</a>
+            </div>
+            <div class="bar">
+                <button class="open-menu" id="open-menu">
+                    <svg class="svg-menu" fill="#ffffff" width="190px" height="181px" viewBox="0 0 32.00 32.00" enable-background="new 0 0 32 32" id="Glyph" version="1.1" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" stroke="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path d="M26,16c0,1.104-0.896,2-2,2H8c-1.104,0-2-0.896-2-2s0.896-2,2-2h16C25.104,14,26,14.896,26,16z" id="XMLID_314_"></path><path d="M26,8c0,1.104-0.896,2-2,2H8c-1.104,0-2-0.896-2-2s0.896-2,2-2h16C25.104,6,26,6.896,26,8z" id="XMLID_315_"></path><path d="M26,24c0,1.104-0.896,2-2,2H8c-1.104,0-2-0.896-2-2s0.896-2,2-2h16C25.104,22,26,22.896,26,24z" id="XMLID_316_"></path></g></svg>
+                </button>
+                <ul class="phrase-text"id="menu">
+                    <div class="nav-button">
+                        <button class="close-menu" id="close-menu">
+                            <svg fill="#ffffff" viewBox="0 0 32 32" enable-background="new 0 0 32 32" id="Glyph" version="1.1" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" stroke="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="0.064"></g><g id="SVGRepo_iconCarrier"><path d="M16,26c-1.104,0-2-0.896-2-2V8c0-1.104,0.896-2,2-2s2,0.896,2,2v16C18,25.104,17.104,26,16,26z" id="XMLID_298_"></path><path d="M24,26c-1.104,0-2-0.896-2-2V8c0-1.104,0.896-2,2-2s2,0.896,2,2v16C26,25.104,25.104,26,24,26z" id="XMLID_310_"></path><path d="M8,26c-1.104,0-2-0.896-2-2V8c0-1.104,0.896-2,2-2s2,0.896,2,2v16C10,25.104,9.104,26,8,26z" id="XMLID_312_"></path></g></svg>
+                        </button>
+                    </div>
+                    <a href="#" class="History" id="history-btn">All Projects & Tasks</a>
+                    <a href="{{ url_for('logout') }}">Logout</a>
+                </ul>
+            </div>
+        </nav>
+    </header>
+    {%with messages = get_flashed_messages(with_categories=true)%}
+        {%if messages%}
+            {%for category, message in messages%}
+            <div class="alert alert-{{category}}">
+                {{message}}
+            </div>
+            {%endfor%}
+        {%endif%}
+    {%endwith%}
+    <section class="main-section">
+        <div class="recent-tasks">
+            <div class="recent-task-section">
+                <div class="recent-title"> 
+                    <h1>Recent</h1>
+                   <!-- <button class="mobile-project-block" id="mobile-project-block">
+                        <svg class="svg-project-mobile" fill="#ffffff" viewBox="0 0 256 256" id="Flat" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff" stroke-width="0.00256"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M224,68H154.6665a4.02373,4.02373,0,0,1-2.3999-.80029L124.5332,46.3999A12.07667,12.07667,0,0,0,117.3335,44H72A12.01375,12.01375,0,0,0,60,56V76H40A12.01375,12.01375,0,0,0,28,88V200a12.01375,12.01375,0,0,0,12,12H192.88867A11.12373,11.12373,0,0,0,204,200.88867V180h20.88867A11.12373,11.12373,0,0,0,236,168.88867V80A12.01375,12.01375,0,0,0,224,68ZM196,200.88867A3.11456,3.11456,0,0,1,192.88867,204H40a4.00458,4.00458,0,0,1-4-4V88a4.00458,4.00458,0,0,1,4-4H85.3335a4.02373,4.02373,0,0,1,2.3999.80029l27.7334,20.79981A12.07667,12.07667,0,0,0,122.6665,108H192a4.00458,4.00458,0,0,1,4,4Zm32-32A3.11456,3.11456,0,0,1,224.88867,172H204V112a12.01375,12.01375,0,0,0-12-12H122.6665a4.02373,4.02373,0,0,1-2.3999-.80029L92.5332,78.3999A12.07667,12.07667,0,0,0,85.3335,76H68V56a4.00458,4.00458,0,0,1,4-4h45.3335a4.02373,4.02373,0,0,1,2.3999.80029L147.4668,73.6001A12.07667,12.07667,0,0,0,154.6665,76H224a4.00458,4.00458,0,0,1,4,4Z"></path> </g></svg>
+                        <p>Projects & Tasks</p>
+                    </button> -->
+                </div>
+              <!--  <div class="mobile-task-btn">
+                    {% if project %}
+                            <a href="{{url_for('home')}}"><button class="all-projects"><p>All Projects</p></button></a>
+                            <button class="new-task" id="new-task-mobile"><p>New Task</p></button>
+                            <button class="new-project" id="new-project-mobile"><p>New project</p></button>
+                        {% else %}
+                            <button class="new-task" id="new-task-mobile"><p>New Task</p></button>
+                            <button class="new-project" id="new-project-mobile"><p>New project</p></button>
+                        {% endif %}
+                </div> -->
+                <div class="list-of-tasks">
+                    {% if recent_tasks %}
+                    <ul class="ulist-of-tasks">
+                        {%for task in recent_tasks%}
+                        <li>
+                            <div class="task-item-container">
+                                <div class="task-list-card">
+                                    <h3>{{ task.title }}</h3>
+                                    <button class="complete-task-list-btn" data-task-id="{{ task.id }}">{% if task.completed %} ✓ {% else %}  {% endif %}</button>
+                                </div>
+                                {%if task.deadline %}
+                                    <span>{{ task.deadline.strftime('%d-%m-%Y') }}</span>
+                                {% else %}
+                                    <span>No deadline</span>
+                                {% endif %}
+                            </div>
+                        </li>
+                        {%endfor%}
+                    </ul>
+                    {% else%}
+                    <p>No tasks found</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="check-task-files">
+            <div class="inside">
+                <div class="project-block">
+                    <div class="project-logo">
+                        <svg class="svg-project"" fill="#ffffff" viewBox="0 0 256 256" id="Flat" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff" stroke-width="0.00256"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M224,68H154.6665a4.02373,4.02373,0,0,1-2.3999-.80029L124.5332,46.3999A12.07667,12.07667,0,0,0,117.3335,44H72A12.01375,12.01375,0,0,0,60,56V76H40A12.01375,12.01375,0,0,0,28,88V200a12.01375,12.01375,0,0,0,12,12H192.88867A11.12373,11.12373,0,0,0,204,200.88867V180h20.88867A11.12373,11.12373,0,0,0,236,168.88867V80A12.01375,12.01375,0,0,0,224,68ZM196,200.88867A3.11456,3.11456,0,0,1,192.88867,204H40a4.00458,4.00458,0,0,1-4-4V88a4.00458,4.00458,0,0,1,4-4H85.3335a4.02373,4.02373,0,0,1,2.3999.80029l27.7334,20.79981A12.07667,12.07667,0,0,0,122.6665,108H192a4.00458,4.00458,0,0,1,4,4Zm32-32A3.11456,3.11456,0,0,1,224.88867,172H204V112a12.01375,12.01375,0,0,0-12-12H122.6665a4.02373,4.02373,0,0,1-2.3999-.80029L92.5332,78.3999A12.07667,12.07667,0,0,0,85.3335,76H68V56a4.00458,4.00458,0,0,1,4-4h45.3335a4.02373,4.02373,0,0,1,2.3999.80029L147.4668,73.6001A12.07667,12.07667,0,0,0,154.6665,76H224a4.00458,4.00458,0,0,1,4,4Z"></path> </g></svg>
+                        {% if project %}
+                            <p>Projects & Tasks > <a id="project-name-link" href="#" style="text-decoration: none;">{{ project.name }}</a></p>
+                        {% else %}
+                            <p>Projects & Tasks</p>
+                        {% endif %}
+                    </div>
+                    <div class="task-btns">
+                        {% if project %}
+                            <a href="{{url_for('home')}}"><button class="all-projects"><p>All Projects</p></button></a>
+                            <button class="new-task" id="new-task"><p>New Task</p></button>
+                            <button class="new-project" id="new-project""><p>New project</p></button>
+                        {% else %}
+                            <button class="new-task" id="new-task"><p>New Task</p></button>
+                            <button class="new-project" id="new-project""><p>New project</p></button>
+                        {% endif %}
+                    </div>
+                </div>
+                {% if project %}
+                    {# VISTA DE PROYECTO: Muestra la lista de tareas de ESE proyecto #}
+                    <div class="task-and-projects">
+                        <div class="last-tasks-block">
+                            {%for task in tasks %}
+                            <button class="task-card-btn" data-task-id="{{task.id}}" data-task-title="{{task.title}}" data-task-description="{{task.description}}" data-task-date="{{task.date_created.strftime('%Y-%m-%d')}}" data-task-completed="{{task.completed}}" data-task-deadline="{{ task.deadline.strftime('%Y-%m-%d') if task.deadline else '' }}">
+                                <div class="{%if task.completed%}completed-task-card{% else %}task-card{% endif %}">
+                                    <p>{{task.title}}</p>
+                                </div>
+                            </button>
+                            {%endfor%}
+                        </div>
+                    </div>
+                    <h3>Project Progress</h3>
+                    <div class="progress-container">
+                        <p class="progress-text background-text">{{"%.0f"|format(project.progress)}}%</p>
+                        <div class="progress-bar" style="width: {{project.progress}}%;">
+                            <p class="progress-text foreground-text">{{"%.0f"|format(project.progress)}}%</p>
+                        </div>
+                    </div>
+                {% elif card_tasks or incomplete_projects %}
+                    {# VISTA GENERAL: Muestra las tarjetas de tareas y proyectos #}
+                    <div class="task-and-projects">
+                        {% if card_tasks %}
+                            <div class="last-tasks-block">
+                                {%for task in card_tasks %}
+                                <button class="task-card-btn" data-task-id="{{task.id}}" data-task-title="{{task.title}}" data-task-description="{{task.description}}" data-task-date="{{task.date_created.strftime('%Y-%m-%d')}}" data-task-completed="{{task.completed}}" data-task-deadline="{{ task.deadline.strftime('%Y-%m-%d') if task.deadline else '' }}">
+                                    <div class="task-card">
+                                        <p>{{task.title}}</p>
+                                    </div>
+                                </button>
+                                {%endfor%}
+                            </div>
+                        {% endif %}
+                        {% if incomplete_projects %}
+                            <div class="last-projects-block">
+                                {%for project in incomplete_projects %}
+                                <a href="{{url_for('view_project', project_id=project.id)}}" class="project-card-btn" data-project-id="{{project.id}}" data-project-name="{{project.name}}">
+                                    <div class="project-card">
+                                        <svg class="svg-project-card" viewBox="0 0 512.00 512.00" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill="#f0f8ff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <title>project</title> <g id="Page-1" stroke-width="0.00512" fill="none" fill-rule="evenodd"> <g id="Combined-Shape" fill="#f0f8ff" transform="translate(64.000000, 34.346667)"> <path d="M192,7.10542736e-15 L384,110.851252 L384,332.553755 L192,443.405007 L1.42108547e-14,332.553755 L1.42108547e-14,110.851252 L192,7.10542736e-15 Z M42.666,157.654 L42.6666667,307.920144 L170.666,381.82 L170.666,231.555 L42.666,157.654 Z M341.333,157.655 L213.333,231.555 L213.333,381.82 L341.333333,307.920144 L341.333,157.655 Z M192,49.267223 L66.1333333,121.936377 L192,194.605531 L317.866667,121.936377 L192,49.267223 Z"> </path> </g> </g> </g></svg>
+                                        <p>{{project.name}}</p>
+                                    </div>
+                                </a>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% else%}
+                    <p>No tasks found</p>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Task Pop-Up-->
+
+    <div class="Pop-up-modal" id="Pop-up-modal">
+        <div class="pop-up-title">
+            <h1>New Task</h1>
+        </div>
+        <form class="pop-up-form" method="POST" action="{{ url_for('home') }}"> 
+            {{ task_form.hidden_tag() }}
+            {{ task_form.project(class="hidden-project-select") }}
+            <h1>Task</h1>
+            {{ task_form.title(class="task-name") }}
+            <h1>Details</h1>
+            {{ task_form.description(class="task-details")}}
+            <div class="bottom-pop-up">
+                <div class="left-bottom-pop-up">
+                    {{ task_form.deadline(class="task-deadline") }}
+                </div>
+                <div class="right-bottom-pop-up">
+                    <button type="button" class="project-selection"><svg class="svg-project"" fill="#ffffff" viewBox="0 0 256 256" id="Flat" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff" stroke-width="0.00256"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M224,68H154.6665a4.02373,4.02373,0,0,1-2.3999-.80029L124.5332,46.3999A12.07667,12.07667,0,0,0,117.3335,44H72A12.01375,12.01375,0,0,0,60,56V76H40A12.01375,12.01375,0,0,0,28,88V200a12.01375,12.01375,0,0,0,12,12H192.88867A11.12373,11.12373,0,0,0,204,200.88867V180h20.88867A11.12373,11.12373,0,0,0,236,168.88867V80A12.01375,12.01375,0,0,0,224,68ZM196,200.88867A3.11456,3.11456,0,0,1,192.88867,204H40a4.00458,4.00458,0,0,1-4-4V88a4.00458,4.00458,0,0,1,4-4H85.3335a4.02373,4.02373,0,0,1,2.3999.80029l27.7334,20.79981A12.07667,12.07667,0,0,0,122.6665,108H192a4.00458,4.00458,0,0,1,4,4Zm32-32A3.11456,3.11456,0,0,1,224.88867,172H204V112a12.01375,12.01375,0,0,0-12-12H122.6665a4.02373,4.02373,0,0,1-2.3999-.80029L92.5332,78.3999A12.07667,12.07667,0,0,0,85.3335,76H68V56a4.00458,4.00458,0,0,1,4-4h45.3335a4.02373,4.02373,0,0,1,2.3999.80029L147.4668,73.6001A12.07667,12.07667,0,0,0,154.6665,76H224a4.00458,4.00458,0,0,1,4,4Z"></path> </g></svg><p>Assign Project</p></button>
+                    <button type="button" class="exit" id="exit">Exit</button>
+                    {{ task_form.submit(class="save", id="save") }}
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Display Task Pop-Up-->
+
+    <div class="Pop-up-modal" id="Pop-up-task-modal">
+        <div class="pop-up-title">
+            <h1>Task Details</h1>
+        </div>
+        <div class="pop-up-form"> 
+            <h1 id="task-detail-title">Task Title</h1>
+            <h1>Details</h1>
+            <h2 class="task-details" id="task-detail-description">Task description will appear here</h2>
+            <h1>Date Created</h1>
+            <p id="task-detail-date">Date will appear here</p>
+            <p id="task-detail-deadline"></p> <!-- Espacio para la fecha límite -->
+            <p id="task-detail-status">Status: Pending</p>
+            <div class="bottom-pop-up">
+                <div class="task-left-bottom-pop-up">
+                    <button type="button" class="edit-task-btn" id="edit">Edit Task</button>
+                </div>
+                <button type="button" class="exit" id="close-task-details">Exit</button>
+                <button type="button" class="delete-task-btn" id="delete-task-btn">Delete Task</button>
+                <button type="button" class="complete-task-btn" id="complete-task-btn">Mark as Complete</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Project Pop-Up-->
+
+    <div class="project-pop-up-modal" id="project-pop-up-modal">
+        <div class="pop-up-title">
+            <h1>New Project</h1>
+        </div>
+        <form class="pop-up-form" method="POST" action="{{ url_for('new_project') }}"> 
+            {{ project_form.hidden_tag() }}
+            <h1>Project</h1>
+            {{ project_form.name(class="project-name") }}
+        
+            <div class="bottom-project-pop-up">
+                <div class="project-deadline-container">
+                    <p>Deadline</p>
+                    {{ project_form.deadline(class="project-deadline") }}
+                </div>
+                <button type="button" class="exit" id="exit-project">Exit</button>
+                {{ project_form.submit(class="save") }}
+            </div>
+        </form>
+    </div>
+
+    <div class="project-selection-pop-up">
+        <div class="folder-selection-title">
+            <h1>Select Project</h1>
+        </div>
+        <ul class="project-list">
+            {% if project_list or incomplete_projects %}
+                {% for project in project_list or incomplete_projects%}
+                    <li class="project-item" data-project-id="{{ project.id }}" data-project-name="{{ project.name }}"> {{ project.name }} </li>
+                {% endfor %}
+                <li class="project-item" data-project-id="">No Project</li>
+            {% else %}
+                <p>No projects found</p>
+            {% endif %}
+        </ul>
+    </div>
+
+    {% if project%}
+    <script>
+        // PASO 1: Inyectamos el ID y estado del proyecto en una variable global de JavaScript.
+        // Esto solo se ejecuta cuando estamos en la vista de un proyecto.
+        window.currentProjectId = {{ project.id }};
+        window.currentProjectCompleted = {{ 'true' if project.completed else 'false' }};
+    </script>
+    <!-- Project Display -->
+        <div class="Pop-up-modal" id="project-display-pop-up-modal">
+            <div class="pop-up-title">
+                <h1>Project Details</h1>
+            </div>
+            <div class="pop-up-form"> 
+                <h1 id="project-detail-title">{{project.name}}</h1>
+                <h1>Details</h1>
+                <h2 class="task-details" id="project-detail-description">{{ project.description if project.description else 'No description provided.' }}</h2>
+                <h1>Date Created</h1>
+                <p id="project-detail-date">{{ project.date_created.strftime('%Y-%m-%d') }}</p>
+                <p id="project-detail-deadline">
+                    {% if project.deadline %}
+                        Deadline: {{ project.deadline.strftime('%Y-%m-%d') }}
+                    {% else %}
+                        No deadline
+                    {% endif %}
+                </p>
+                <p id="project-detail-status">Status: {% if project.completed %}Completed{% else %}Pending{% endif %}</p>
+                <div class="bottom-pop-up">
+                    <button type="button" class="exit" id="close-project-details">Exit</button>
+                    <form method="POST" action="{{ url_for('delete_project', project_id=project.id) }}" style="display: inline;">
+                        <button type="submit" class="delete-task-btn" onclick="return confirm('Are you sure you want to delete this project and all its tasks?');">Delete Project</button>
+                    </form>
+                    <button type="button" class="complete-task-btn" id="complete-project-btn">Mark as {% if project.completed %}Incomplete{% else %}Complete{% endif %}</button>                    
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- All Projects & Tasks -->
+
+        <div class="history-pop-up" id="history-pop-up">
+            <div class="history-title">
+                <h1>All Projects & Tasks</h1>
+            </div>
+            <div class="inside-history">
+                <div class="task-history">
+                    <div class="task-history-text">
+                        <h2>Task History</h2>
+                    </div>
+                    <ul class="task-history-list">
+                        {% if all_tasks %}
+                            {% for task in all_tasks %}
+                                <li class="task-history-item"><a class="task-history-link" href="#" style="text-decoration: none" data-task-id="{{task.id}}" data-task-title="{{task.title}}" data-task-description="{{task.description}}" data-task-date="{{task.date_created.strftime('%Y-%m-%d')}}" data-task-completed="{{task.completed}}" data-task-deadline="{{ task.deadline.strftime('%Y-%m-%d') if task.deadline else '' }}">{{task.title}}</a>
+                                    <div class="history-task-details">
+                                        <p>Date Created: {{task.date_created.strftime('%d-%m-%Y')}}</p>
+                                        <p>DeadLine: {% if task.deadline %} {{task.deadline.strftime('%d-%m-%Y')}} {% else %} No deadline {% endif %}</p>
+                                        <p>Status: {% if task.completed %}Completed{% else %}Pending{% endif %}</p>
+                                        <p>Assign Project: {% if task.project %} {{task.project.name}} {% else %} No project {% endif %}</p>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        {% else %}
+                            <p>No tasks found</p>
+                        {% endif %} 
+                    </ul>
+                </div>
+                <div class="projects-history">
+                    <div class="projects-history-text">
+                        <h2>Projects History</h2>
+                    </div>
+                    <div class="projects-history-list">
+                        {% if projects %}
+                            {% for project in projects %}
+                                <div class="project-card">
+                                    <svg class="svg-project-card" viewBox="0 0 512.00 512.00" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill="#f0f8ff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <title>project</title> <g id="Page-1" stroke-width="0.00512" fill="none" fill-rule="evenodd"> <g id="Combined-Shape" fill="#f0f8ff" transform="translate(64.000000, 34.346667)"> <path d="M192,7.10542736e-15 L384,110.851252 L384,332.553755 L192,443.405007 L1.42108547e-14,332.553755 L1.42108547e-14,110.851252 L192,7.10542736e-15 Z M42.666,157.654 L42.6666667,307.920144 L170.666,381.82 L170.666,231.555 L42.666,157.654 Z M341.333,157.655 L213.333,231.555 L213.333,381.82 L341.333333,307.920144 L341.333,157.655 Z M192,49.267223 L66.1333333,121.936377 L192,194.605531 L317.866667,121.936377 L192,49.267223 Z"> </path> </g> </g> </g></svg>
+                                    <a class="project-name-link" href="{{ url_for('view_project', project_id=project.id) }}" style="text-decoration: none">{{project.name}}</a></div>
+                            {% endfor %}
+                        {% else %}
+                            <p>No projects found</p>
+                        {% endif %} 
+                    </div>
+                </div>
+            </div>
+            <div class="bottom-pop-up"> 
+                <button type="button" class="exit" id="close-task-details">Exit</button>
+            </div>
+        </div>
+
+        <div class="mobile-projects-task" id="mobile-projects-task">
+            <div class="mobile-title">
+                <h1>Projects & Tasks</h1>
+            </div>
+            <div class="mobile-task-section">
+                <div class="recent-mobile-task">
+                    {%if recent_task_mobile %}
+                        {%for task in recent_task_mobile %}
+                            <button class="task-card-btn" data-task-id="{{task.id}}" data-task-title="{{task.title}}" data-task-description="{{task.description}}" data-task-date="{{task.date_created.strftime('%Y-%m-%d')}}" data-task-completed="{{task.completed}}" data-task-deadline="{{ task.deadline.strftime('%Y-%m-%d') if task.deadline else '' }}">
+                                <div class="{%if task.completed%}completed-task-card{% else %}task-card{% endif %}">
+                                    <p>{{task.title}}</p>
+                                </div>
+                            </button>
+                        {% endfor %}
+                        {% else %}
+                        <p>No recent Task</p>
+                    {% endif %}
+                </div>
+                <div class="recent-mobile-project">
+                    {% if incomplete_projects %}
+                        {% for project in incomplete_projects %}
+                            <a href="{{url_for('view_project', project_id=project.id)}}" class="project-card-btn" data-project-id="{{project.id}}" data-project-name="{{project.name}}">
+                                <div class="project-card">
+                                    <svg class="svg-project-card" viewBox="0 0 512.00 512.00" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill="#f0f8ff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <title>project</title> <g id="Page-1" stroke-width="0.00512" fill="none" fill-rule="evenodd"> <g id="Combined-Shape" fill="#f0f8ff" transform="translate(64.000000, 34.346667)"> <path d="M192,7.10542736e-15 L384,110.851252 L384,332.553755 L192,443.405007 L1.42108547e-14,332.553755 L1.42108547e-14,110.851252 L192,7.10542736e-15 Z M42.666,157.654 L42.6666667,307.920144 L170.666,381.82 L170.666,231.555 L42.666,157.654 Z M341.333,157.655 L213.333,231.555 L213.333,381.82 L341.333333,307.920144 L341.333,157.655 Z M192,49.267223 L66.1333333,121.936377 L192,194.605531 L317.866667,121.936377 L192,49.267223 Z"> </path> </g> </g> </g></svg>
+                                    <p>{{project.name}}</p>
+                                </div>
+                            </a>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="close-mobile-project">
+                <button type="button" class="exit" id="close-project-block">Exit</button>
+            </div>
+        </div>
+    <script src="/static/script.js"></script>
+</body>
+</html>
+</html>
