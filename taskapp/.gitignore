@@ -41,3 +41,5 @@ Thumbs.db
 # App specific
 tasks.json
 
+.env
+
