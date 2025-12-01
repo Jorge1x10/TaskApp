@@ -12,6 +12,11 @@
     font-family: var(--text-font-family);
     line-height: var(--text-line-height-h1);
   }
+
+  a{
+    text-decoration: none;
+  }
+
   h2 {
     color: var(--text-primary-color);
     font-family: var(--text-font-family);
@@ -1170,6 +1175,26 @@ header {
 =======================
 */
 @media screen and (max-width: 768px) {
+    .top .nav_bar .bar ul a{
+        text-decoration: none;
+        border-bottom: none;
+    }
+    .main_container{
+        flex-direction: column;
+    }
+
+    .main_container .left_main_section{
+        width: 100%;
+
+    }
+
+    .main_container .right_main_section{
+        display: none;
+    }
+
+    .footer{
+        flex-direction: column;
+    }
     
     .main-banner{
         flex-direction: column;
@@ -1219,7 +1244,7 @@ header {
     }
     
 
-    .top .nav_bar ul{
+    .top .nav_bar .phrase-text{
         flex-direction: column;
         align-items: flex-start;
         top: 0%;
