@@ -15,7 +15,11 @@ app.config['SECRET_KEY'] = '5791628bb0b13ce0c676dfde280ba245'
 
 # Configuración de base de datos con fallback a SQLite
 database_url = os.environ.get('DATABASE_URL')
-if database_url and database_url.startswith('postgresql'):
+if database_url and (database_url.startswith('postgresql://') or database_url.startswith('postgres://')):
+    # Render puede proporcionar 'postgres://', SQLAlchemy necesita 'postgresql://'
+    if database_url.startswith('postgres://'):
+        database_url = database_url.replace('postgres://', 'postgresql://', 1)
+    
     # Si está configurada PostgreSQL, validar que no sea solo un placeholder
     if 'usuario:password' in database_url:
         # Es un placeholder, usar SQLite en su lugar
@@ -45,4 +49,8 @@ app.config.update(mail_settings)
 
 mail = Mail(app)
 
-from taskapp import routes
+from taskapp import routes, models
+
+# Crear las tablas en la base de datos si no existen
+with app.app_context():
+    db.create_all()
