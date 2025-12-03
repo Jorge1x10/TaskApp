@@ -12,7 +12,21 @@ load_dotenv(os.path.join(basedir, '.env'))
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = '5791628bb0b13ce0c676dfde280ba245'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
+
+# Configuración de base de datos con fallback a SQLite
+database_url = os.environ.get('DATABASE_URL')
+if database_url and database_url.startswith('postgresql'):
+    # Si está configurada PostgreSQL, validar que no sea solo un placeholder
+    if 'usuario:password' in database_url:
+        # Es un placeholder, usar SQLite en su lugar
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
+    else:
+        # URL de PostgreSQL válida
+        app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+else:
+    # Si no hay DATABASE_URL o no es PostgreSQL, usar SQLite
+    app.config['SQLALCHEMY_DATABASE_URI'] = database_url or 'sqlite:///site.db'
+
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)

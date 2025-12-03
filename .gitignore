@@ -29,7 +29,7 @@ wheels/
 *.egg
 
 # Flask
-instance/
+instance/site.db
 .webassets-cache
 
 # IDE
