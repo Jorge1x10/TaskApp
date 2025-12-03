@@ -44,7 +44,12 @@ function resetTaskForm() {
     const editForm = document.querySelector('#Pop-up-modal .pop-up-form');
     if (editForm) {
         editForm.reset(); // Limpia los campos del formulario
-        editForm.action = "/"; // Restaura la acción original para crear tarea
+        
+    if(window.currentProjectId){
+        editForm.action = `/project/${window.currentProjectId}`;
+    } else {
+        editForm.action = "/home";
+    }
 
         // Restaura el título y el texto del botón
         const titleElement = document.querySelector('#Pop-up-modal .pop-up-title h1');

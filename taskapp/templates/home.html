@@ -169,7 +169,7 @@
         <div class="pop-up-title">
             <h1>New Task</h1>
         </div>
-        <form class="pop-up-form" method="POST" action="{{ url_for('home') }}"> 
+        <form class="pop-up-form" method="POST" action="{% if project %} {{ url_for('view_project', project_id=project.id) }} {% else %} {{ url_for('home') }} {% endif %}"> 
             {{ task_form.hidden_tag() }}
             {{ task_form.project(class="hidden-project-select") }}
             <h1>Task</h1>

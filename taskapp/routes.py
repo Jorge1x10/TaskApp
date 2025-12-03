@@ -203,22 +203,35 @@ def reset_password(token):
 
     return render_template('resetPassword.html', form=form)
 
-@app.route('/project/<int:project_id>')
+@app.route('/project/<int:project_id>', methods=['GET', 'POST'])  # ✅ Agregar methods=['GET', 'POST'] al decorador
 @login_required
-def view_project(project_id):
+def view_project(project_id):  # ✅ Remover methods de los parámetros de la función
     task_form = TaskForm()
+    project_form = ProjectForm()
     project_list = Project.query.filter_by(user_id=current_user.id, completed=False).all()
     project = Project.query.get_or_404(project_id)
     if project.user_id != current_user.id:
         flash('You do not have permission to view this project.', 'danger')
         return redirect(url_for('home'))
 
+    # ✅ Agregar lógica para manejar el envío del formulario de tareas
+    if task_form.validate_on_submit():
+        task = Task(title=task_form.title.data, 
+                    description=task_form.description.data, 
+                    deadline=task_form.deadline.data, 
+                    project=task_form.project.data or project,  # Si no se selecciona proyecto, usar el actual
+                    author=current_user)
+        db.session.add(task)
+        db.session.commit()
+        flash('Task saved successfully!', 'success')
+        return redirect(url_for('view_project', project_id=project_id))
+
     tasks_in_project = Task.query.filter_by(project_id=project_id).order_by(Task.date_created.desc()).all()
     all_tasks = Task.query.filter_by(user_id=current_user.id).order_by(Task.date_created.desc()).all()
     recent_tasks = Task.query.filter_by(user_id=current_user.id, completed=False).order_by(Task.date_created.desc()).all()
 
-    return render_template('home.html', all_tasks=all_tasks, project=project, project_list=project_list, tasks=tasks_in_project, task_form=TaskForm(), 
-                            project_form=ProjectForm(), projects=Project.query.filter_by(user_id=current_user.id).all(), recent_tasks=recent_tasks)
+    return render_template('home.html', all_tasks=all_tasks, project=project, project_list=project_list, tasks=tasks_in_project, task_form=task_form,  # ✅ Usar task_form en lugar de TaskForm()
+                            project_form=project_form, projects=Project.query.filter_by(user_id=current_user.id).all(), recent_tasks=recent_tasks)
 
 
 @app.route('/project/<int:project_id>/complete', methods=['POST'])
