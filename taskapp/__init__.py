@@ -13,7 +13,8 @@ load_dotenv()
 
 app = Flask(__name__)
 
-app.config['SECRET_KEY'] = '5791628bb0b13ce0c676dfde280ba245'
+# Carga la SECRET_KEY desde las variables de entorno para mayor seguridad.
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'a_default_secret_key_for_dev')
 database_url = os.environ.get('DATABASE_URL')
 # Si DATABASE_URL existe (en Render), úsala. De lo contrario (local), usa SQLite.
 # Esto funciona para URLs que empiezan con 'postgres://' y 'postgresql://'.
@@ -31,19 +32,20 @@ db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
 
-# ✅ Configuración de correo
-mail_settings = {
-    "MAIL_SERVER": 'smtp.gmail.com',
-    "MAIL_PORT": 587,
-    "MAIL_USE_TLS": True,
-    "MAIL_USE_SSL": False,
-    "MAIL_USERNAME": os.environ.get('EMAIL_USER'),
-    "MAIL_PASSWORD": os.environ.get('EMAIL_PASS'),
-    "MAIL_DEFAULT_SENDER": os.environ.get('EMAIL_USER')
-}
-app.config.update(mail_settings)
+# Configuración de correo: solo si las variables de entorno existen
+if os.environ.get('EMAIL_USER') and os.environ.get('EMAIL_PASS'):
+    mail_settings = {
+        "MAIL_SERVER": 'smtp.gmail.com',
+        "MAIL_PORT": 587,
+        "MAIL_USE_TLS": True,
+        "MAIL_USE_SSL": False,
+        "MAIL_USERNAME": os.environ.get('EMAIL_USER'),
+        "MAIL_PASSWORD": os.environ.get('EMAIL_PASS'),
+        "MAIL_DEFAULT_SENDER": os.environ.get('EMAIL_USER')
+    }
+    app.config.update(mail_settings)
+    mail = Mail(app)
 
-mail = Mail(app)
 
 from taskapp import routes
 
