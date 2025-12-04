@@ -6,8 +6,10 @@ from flask_login import LoginManager
 from flask_mail import Mail, Message
 from dotenv import load_dotenv
 
-basedir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
-load_dotenv(os.path.join(basedir, '.env'))
+# Carga las variables de entorno desde un archivo .env.
+# load_dotenv no sobrescribirá las variables que ya están establecidas en el entorno,
+# por lo que las variables de Render tendrán prioridad.
+load_dotenv()
 
 app = Flask(__name__)
 
