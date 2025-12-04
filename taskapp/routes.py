@@ -1,5 +1,6 @@
-from flask import Request, render_template, url_for, flash, redirect, request
-from flask_login import login_user, current_user, logout_user, login_required
+from flask import Request, render_template, url_for, flash, redirect, request, current_app
+from flask_login import login_user, current_user, logout_user, login_required 
+from threading import Thread
 from sqlalchemy.sql.functions import user
 from wtforms import form
 from taskapp import app, db, bcrypt, mail
@@ -161,18 +162,25 @@ def new_project():
     # Después de procesar, redirigimos a home para evitar reenvíos del formulario.
     return redirect(url_for('home'))
 
+def send_async_email(app, msg):
+    """Función para enviar correo en un hilo separado."""
+    with app.app_context():
+        mail.send(msg)
+
 def send_reset_email(user):
     """Función auxiliar para enviar el correo."""
     token = user.get_reset_token()
     msg = Message('Solicitud de Reseteo de Contraseña',
                   sender=app.config.get('MAIL_DEFAULT_SENDER') or 'noreply@demo.com',  # ✅ Usar config
                   recipients=[user.email])
-    msg.body = f'''Para restablecer tu contraseña, visita el siguiente enlace:
+    msg.body = f'''Para restablecer tu contraseña, visita el siguiente enlace (el enlace expira en 30 minutos):
 {url_for('reset_password', token=token, _external=True)}
 
 Si no solicitaste este cambio, simplemente ignora este correo y no se realizará ningún cambio.
 '''
-    mail.send(msg)
+    # Inicia un hilo para enviar el correo en segundo plano
+    # Pasamos 'current_app._get_current_object()' para evitar problemas de contexto de la aplicación en el hilo
+    Thread(target=send_async_email, args=(current_app._get_current_object(), msg)).start()
 
 @app.route('/resetRequest', methods=['GET', 'POST'])
 def reset_Request():
