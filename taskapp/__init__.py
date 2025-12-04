@@ -12,7 +12,17 @@ load_dotenv(os.path.join(basedir, '.env'))
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = '5791628bb0b13ce0c676dfde280ba245'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
+database_url = os.environ.get('DATABASE_URL')
+if database_url and database_url.startswith('postgresql'):
+    app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+else:
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
+
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+    'pool_pre_ping': True,  # Verifica conexiones antes de usarlas
+    'pool_recycle': 300,    # Recicla conexiones cada 5 minutos
+}
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
@@ -32,3 +42,13 @@ app.config.update(mail_settings)
 mail = Mail(app)
 
 from taskapp import routes
+
+def init_db():
+    with app.app_context():
+        try:
+            db.create_all()
+            print("Base de datos inicializada correctamente")
+        except Exception as e:
+            print(f"Error al inicializar la base de datos: {e}")
+
+init_db()
