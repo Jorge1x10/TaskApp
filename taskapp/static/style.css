@@ -21,6 +21,7 @@
     color: var(--text-primary-color);
     font-family: var(--text-font-family);
     line-height: var(--text-line-height-h2);
+    font-weight: 300;
   }
   h3, h4, h5, h6, p, li{
     color: var(--text-primary-color);
@@ -638,7 +639,13 @@ header {
     padding: 5px;
     resize: none;
     letter-spacing: normal;
-    
+    font-weight: 300;
+}
+
+.Pop-up-modal .pop-up-form .task-details-container{
+    gap:0.5em;
+    display: flex;
+    flex-direction: column;
 }
 
  .bottom-pop-up {
@@ -1035,7 +1042,7 @@ header {
     display: flex;
     flex-direction: column;
     padding: 1em;
-    z-index: 1999;
+    z-index: 900;
     opacity: 0;
     visibility: hidden;
     transform: scale(0.95);
@@ -1335,7 +1342,7 @@ header {
 
     .main-section .project-block{
         width: 100%;
-        height: 18%;
+        height: 22%;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -1358,6 +1365,7 @@ header {
         width: 100%;
     }
 
+
     .main-section .recent-tasks .recent-task-section .mobile-task-btn{
         display: flex;
         flex-direction: row;
@@ -1365,6 +1373,12 @@ header {
         gap: 10%;
         height: 12%;
         align-items: center;
+    }
+
+    .main-section .project-block .task-btns{
+        height: 52%;
+        width: 100%;
+        padding-inline: 5%;
     }
     .main-section .recent-tasks .recent-task-section .mobile-task-btn .new-task, .new-project{
         border: none;
@@ -1480,6 +1494,8 @@ header {
     .bottom-pop-up{
         display: flex;
         flex-direction: column;
+        gap: 0.5em
+        
     }
     .right-bottom-pop-up{
         display: flex;
@@ -1487,6 +1503,9 @@ header {
         width: 100%;
         justify-content: flex-end;
         gap: 1em;
+    }
+    .bottom-pop-up .task-left-bottom-pop-up {
+        justify-content: flex-end;
     }
     .bottom-pop-up .right-bottom-pop-up button{
         width: 30%;

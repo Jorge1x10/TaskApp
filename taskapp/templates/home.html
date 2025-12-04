@@ -198,18 +198,22 @@
         <div class="pop-up-form"> 
             <h1 id="task-detail-title">Task Title</h1>
             <h1>Details</h1>
-            <h2 class="task-details" id="task-detail-description">Task description will appear here</h2>
-            <h1>Date Created</h1>
-            <p id="task-detail-date">Date will appear here</p>
-            <p id="task-detail-deadline"></p> <!-- Espacio para la fecha límite -->
-            <p id="task-detail-status">Status: Pending</p>
+            <h3 class="task-details" id="task-detail-description">Task description will appear here</h3>
+            <h2>Date Created</h2>
+            <div class="task-details-container">
+                <p id="task-detail-date">Date will appear here</p>
+                <p id="task-detail-deadline"></p> <!-- Espacio para la fecha límite -->
+                <p id="task-detail-status">Status: Pending</p>
+            </div>
             <div class="bottom-pop-up">
                 <div class="task-left-bottom-pop-up">
                     <button type="button" class="edit-task-btn" id="edit">Edit Task</button>
                 </div>
-                <button type="button" class="exit" id="close-task-details">Exit</button>
-                <button type="button" class="delete-task-btn" id="delete-task-btn">Delete Task</button>
-                <button type="button" class="complete-task-btn" id="complete-task-btn">Mark as Complete</button>
+                <div class="right-bottom-pop-up">
+                    <button type="button" class="exit" id="close-task-details">Exit</button>
+                    <button type="button" class="delete-task-btn" id="delete-task-btn">Delete Task</button>
+                    <button type="button" class="complete-task-btn" id="complete-task-btn">Mark as Complete</button>
+                </div>
             </div>
         </div>
     </div>
