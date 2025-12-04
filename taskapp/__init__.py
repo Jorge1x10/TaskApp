@@ -13,8 +13,10 @@ app = Flask(__name__)
 
 app.config['SECRET_KEY'] = '5791628bb0b13ce0c676dfde280ba245'
 database_url = os.environ.get('DATABASE_URL')
-if database_url and database_url.startswith('postgresql'):
-    app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+# Si DATABASE_URL existe (en Render), úsala. De lo contrario (local), usa SQLite.
+# Esto funciona para URLs que empiezan con 'postgres://' y 'postgresql://'.
+if database_url:
+    app.config['SQLALCHEMY_DATABASE_URI'] = database_url.replace("postgres://", "postgresql://", 1)
 else:
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 
@@ -43,12 +45,11 @@ mail = Mail(app)
 
 from taskapp import routes
 
-def init_db():
-    with app.app_context():
-        try:
-            db.create_all()
-            print("Base de datos inicializada correctamente")
-        except Exception as e:
-            print(f"Error al inicializar la base de datos: {e}")
-
-init_db()
+# Es mejor crear un comando para inicializar la base de datos
+# en lugar de llamarlo cada vez que se inicia la aplicación.
+# Puedes ejecutar esto desde tu terminal con: flask init-db
+@app.cli.command('init-db')
+def init_db_command():
+    """Crea las tablas de la base de datos."""
+    db.create_all()
+    print('Base de datos inicializada.')
